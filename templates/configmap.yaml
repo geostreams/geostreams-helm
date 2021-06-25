@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geostreams.fullname" . }}-config
+  labels:
+{{ include "geostreams.labels" . | indent 4 }}
+data:
+  application.conf: |-
+    db.default.url="{{ include "geostreams.postgresqluri" . }}"
+    # https://www.playframework.com/documentation/latest/Configuration
+    db.default.driver=org.postgresql.Driver
+    # log sql statements - only for dev - turn off in production!
+    db.default.logSql=true
+
+    play.filters.hosts {
+      # Allow requests to example.com, its subdomains, and localhost:9000.
+      allowed = ["."]
+    }
+
+    # Simple protection for non browser requests
+    # https://www.playframework.com/documentation/2.5.x/ScalaCsrf
+    play.filters.csrf.header.bypassHeaders {
+      X-Requested-With = "*"
+      Csrf-Token = "nocheck"
+    }
+
+    play.filters.enabled += "play.filters.cors.CORSFilter"
+    play.filters.cors {
+      pathPrefixes = ["/"]
+      allowedOrigins = [".ncsa.illinois.edu", "http://localhost:9000", "http://localhost:8080", "http://localhost", "http://127.0.0.1", "http://127.0.0.1:8080"]
+      allowedHttpMethods = ["GET", "POST", "PUT", "DELETE"]
+      allowedHttpHeaders = ["Accept"]
+      preflightMaxAge = 3 days
+    }
+
+    ## Secret key
+    # http://www.playframework.com/documentation/latest/ApplicationSecret
+    # ~~~~~
+    # The secret key is used to sign Play's session cookie.
+    # This must be changed for production, but we don't recommend you change it in this file.
+    play.crypto.secret="changeme"
+    play.crypto.secret=${?APPLICATION_SECRET}
+
+    ## Modules
+    # https://www.playframework.com/documentation/latest/Modules
+    # ~~~~~
+    # Control which modules are loaded when Play starts.  Note that modules are
+    # the replacement for "GlobalSettings", which are deprecated in 2.5.x.
+    # Please see https://www.playframework.com/documentation/latest/GlobalSettings
+    # for more information.
+    #
+    # You can also extend Play functionality by using one of the publically available
+    # Play modules: https://playframework.com/documentation/latest/ModuleDirectory
+    play.modules {
+      # By default, Play will load any class called Module that is defined
+      # in the root package (the "app" directory), or you can define them
+      # explicitly below.
+      # If there are any built-in modules that you want to disable, you can list them here.
+      #enabled += my.application.Module
+      enabled += "utils.silhouette.Module"
+
+      # If there are any built-in modules that you want to disable, you can list them here.
+      #disabled += ""
+      disabled += "com.mohiva.play.silhouette.api.actions.SecuredErrorHandlerModule"
+      disabled += "com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandlerModule"
+    }
+
+    # Mailer
+    # ~~~~~
+
+    play.mailer {
+      # SMTP serveur, example : smtp.gmail.com
+      host=smtp.gmail.com
+
+      # Mail Port, example : 465, 587 or 25
+      port=465
+
+      # Mail Auth User, example : user@gmail.com
+      user="your@gmail.com"
+
+      # Mail Auth Password
+      password=yourpassword
+
+      # Mail SSL : true or false
+      ssl=true
+
+      # Will only log all the email properties instead of sending an email
+      mock=true
+
+      # Mail user from
+      from="your@gmail.com"
+    }
+
+    # Silhouette Authentication
+    # ~~~~~
+
+    silhouette {
+      authenticator {
+        cookieName="id"
+        cookiePath="/"
+        secureCookie=false # Disabled for testing on localhost without SSL, otherwise cookie couldn't be set
+        httpOnlyCookie=true
+        useFingerprinting=true
+        fieldName="X-Auth-Token"
+        requestParts=""
+        authenticatorIdleTimeout=30 minutes
+        authenticatorExpiry=12 hours
+
+        rememberMe {
+          cookieMaxAge=30 days
+          authenticatorIdleTimeout=5 days
+          authenticatorExpiry=30 days
+        }
+
+        cookie.signer {
+          key = "[changeme]" # A unique encryption key
+          pepper = "-mohiva-silhouette-cookie-signer-" # Constant prepended and appended to the data before signing. When using one key for multiple purposes, using a specific pepper reduces some risks arising from this.
+        }
+        crypter.key = "[changeme]" # A unique encryption key
+      }
+    }
+
+    master.default="your@email.com"
+
+    play.i18n.langs = [ "en", "en-US", "fr" ]
+
+    # The following properties are used when the geostreaming service
+    # returns the data as type csv instead of json.
+    json2csv.ignore="type,geometry|type"
+    json2csv.hideprefix=true
+    json2csv.seperator=|
+    json2csv.fixgeometry=true
+
