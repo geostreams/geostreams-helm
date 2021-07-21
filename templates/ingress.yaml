@@ -31,11 +31,13 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
+          - path: /
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-          {{- end }}
+              serviceName: {{ $fullName }}-geodashboard
+              servicePort: {{ $.Values.geodashboard.port }}
+          - path: /api
+            backend:
+              serviceName: {{ $fullName }}-api
+              servicePort: {{ $.Values.service.port }}
     {{- end }}
   {{- end }}

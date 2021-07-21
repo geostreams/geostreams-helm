@@ -46,7 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "geostreams.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "geostreams.name" . }}
+app.kubernetes.io/name: {{ include "geostreams.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

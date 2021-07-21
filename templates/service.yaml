@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "geostreams.fullname" . }}
+  name: {{ include "geostreams.fullname" . }}-api
   labels:
 {{- include "geostreams.labels" . | nindent 4 }}
 spec:
@@ -12,4 +12,24 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "geostreams.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-api
+    app.kubernetes.io/instance: {{ .Release.Name }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "geostreams.fullname" . }}-geodashboard
+  labels:
+{{- include "geostreams.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.geodashboard.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-geodashboard
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "geostreams.fullname" . }}-api
+  name: {{ include "geostreams.fullname" . }}-geodashboard
   labels:
-    app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-api
+    app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-geodashboard
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
@@ -11,7 +11,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-api
+      app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-geodashboard
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
@@ -21,7 +21,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-api
+        app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-geodashboard
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -38,14 +38,17 @@ spec:
 {{/*            - name: PG_URI*/}}
 {{/*              value: {{ include "geostreams.postgresqluri" . }}*/}}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: geodashboard
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.geodashboard.repository }}:{{ .Values.geodashboard.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: GEOSTREAMS_URL
+              value: http://localhost:30002
           ports:
             - name: http
-              containerPort: 9000
+              containerPort: 80
               protocol: TCP
           livenessProbe:
             tcpSocket:
@@ -57,16 +60,16 @@ spec:
               port: http
             timeoutSeconds: 5
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: custom-volume
-              mountPath: /home/geostreams/conf
-          env:
-            - name: APPLICATION_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}
-                  key: geostreams-secret
+          {{- toYaml .Values.resources | nindent 12 }}
+{{/*          volumeMounts:*/}}
+{{/*            - name: custom-volume*/}}
+{{/*              mountPath: /home/geostreams/conf*/}}
+{{/*          env:*/}}
+{{/*            - name: APPLICATION_SECRET*/}}
+{{/*              valueFrom:*/}}
+{{/*                secretKeyRef:*/}}
+{{/*                  name: {{ .Release.Name }}*/}}
+{{/*                  key: geostreams-secret*/}}
       volumes:
         - name: custom-volume
           configMap:
