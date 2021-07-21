@@ -2,7 +2,7 @@
 
 Launches the geostreams API container and a postgresql instance. Depends on bitnami postgresql helm chart.
 
-Start with `helm install geostreams .`. 
+Start with `helm upgrade --install geostreams .`. 
 
 Stop with `helm uninstall geostreams`.
 

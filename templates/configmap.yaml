@@ -6,6 +6,7 @@ metadata:
 {{ include "geostreams.labels" . | indent 4 }}
 data:
   application.conf: |-
+    play.http.context="/geostreams"
     db.default.url="{{ include "geostreams.postgresqluri" . }}"
     # https://www.playframework.com/documentation/latest/Configuration
     db.default.driver=org.postgresql.Driver

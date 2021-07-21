@@ -35,7 +35,7 @@ spec:
             backend:
               serviceName: {{ $fullName }}-geodashboard
               servicePort: {{ $.Values.geodashboard.port }}
-          - path: /api
+          - path: /geostreams/api
             backend:
               serviceName: {{ $fullName }}-api
               servicePort: {{ $.Values.service.port }}

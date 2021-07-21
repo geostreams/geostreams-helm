@@ -43,9 +43,6 @@ spec:
           {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.geodashboard.repository }}:{{ .Values.geodashboard.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: GEOSTREAMS_URL
-              value: http://localhost:30002
           ports:
             - name: http
               containerPort: 80
