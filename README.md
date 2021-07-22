@@ -6,6 +6,18 @@ Start with `helm upgrade --install geostreams .`.
 
 Stop with `helm uninstall geostreams`.
 
+To pull images from hub.ncsa.illinoi.edu. You will have to register a secret in kubernetes with the api token for the 
+robot account. To do that run:
+
+```
+kubectl create secret docker-registry regcred 
+ --docker-server='hub.ncsa.illinois.edu' 
+ --docker-username='robot$github-geostreams' 
+ --docker-password='ROBOT_PASSWORD_HERE' 
+ --docker-email='YOUR_EMAIL_HERE' --namespace=default
+```
+This will create a secret called `regcred` (you can change the name) which is referred to in `imagePullSecrets` in `values.yaml`.
+
 Files modified on top of the helm boilerplate:
 
 `teplates/configmap.yaml` creates the application.conf for the geostreams-api Play application.
