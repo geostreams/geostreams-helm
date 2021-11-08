@@ -74,6 +74,8 @@ spec:
             items:
               - key: application.conf
                 path: application.conf
+              - key: logback.xml
+                path: logback.xml
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

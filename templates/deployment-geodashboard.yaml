@@ -41,8 +41,8 @@ spec:
         - name: geodashboard
           securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.geodashboard.repository }}:{{ .Values.geodashboard.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.geodashboard.repository }}/{{ .Values.geodashboard.project }}:{{ .Values.geodashboard.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 80
@@ -53,11 +53,14 @@ spec:
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
-              path: /
+              path: /geodashboard
               port: http
             timeoutSeconds: 5
           resources:
           {{- toYaml .Values.resources | nindent 12 }}
+{{/*          env:*/}}
+{{/*          - name: CONTEXT*/}}
+{{/*            value: "/geodashboard"*/}}
 {{/*          volumeMounts:*/}}
 {{/*            - name: custom-volume*/}}
 {{/*              mountPath: /home/geostreams/conf*/}}
@@ -67,13 +70,13 @@ spec:
 {{/*                secretKeyRef:*/}}
 {{/*                  name: {{ .Release.Name }}*/}}
 {{/*                  key: geostreams-secret*/}}
-      volumes:
-        - name: custom-volume
-          configMap:
-            name: {{ include "geostreams.fullname" . }}-config
-            items:
-              - key: application.conf
-                path: application.conf
+{{/*      volumes:*/}}
+{{/*        - name: custom-volume*/}}
+{{/*          configMap:*/}}
+{{/*            name: {{ include "geostreams.fullname" . }}-config*/}}
+{{/*            items:*/}}
+{{/*              - key: application.conf*/}}
+{{/*                path: application.conf*/}}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

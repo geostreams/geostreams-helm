@@ -1,11 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "geostreams.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -31,13 +27,19 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          - path: /
+          - path: /geodashboard
+            pathType: ImplementationSpecific
             backend:
-              serviceName: {{ $fullName }}-geodashboard
-              servicePort: {{ $.Values.geodashboard.port }}
-          - path: /geostreams/api
+              service:
+                name: {{ $fullName }}-geodashboard
+                port:
+                  number: {{ $.Values.geodashboard.port }}
+          - path: /geostreams
+            pathType: ImplementationSpecific
             backend:
-              serviceName: {{ $fullName }}-api
-              servicePort: {{ $.Values.service.port }}
+              service:
+                name: {{ $fullName }}-api
+                port:
+                  number: {{ $.Values.service.port }}
     {{- end }}
   {{- end }}

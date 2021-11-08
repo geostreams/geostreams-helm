@@ -1,0 +1,13 @@
+geodashboard:
+  project: cinet
+  tag: 0.0.4
+  pullPolicy: Always
+
+ingress:
+  hosts:
+    - host: cinet.141.142.216.39.nip.io
+#      paths:
+#        - path: /
+#          backend:
+#            serviceName: chart-example.local
+#            servicePort: 80

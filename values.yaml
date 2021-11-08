@@ -11,11 +11,18 @@ image:
   tag: "latest"
 
 geodashboard:
-  repository: hub.ncsa.illinois.edu/geostreams/glm
+  project: cinet
+  repository: hub.ncsa.illinois.edu/geostreams
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
   port: 80
+
+www:
+  project: cinet
+  repository: hub.ncsa.illinois.edu/geostreams
+  pullPolicy: IfNotPresent
+  tag: "latest"
 
 imagePullSecrets:
   - name: regcred
@@ -54,12 +61,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: glm.127.0.0.1.nip.io
-      paths:
-      - path: /
-        backend:
-          serviceName: chart-example.local
-          servicePort: 80
+    - host: cinet.127.0.0.1.nip.io
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
