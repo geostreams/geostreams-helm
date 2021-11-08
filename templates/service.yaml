@@ -33,3 +33,22 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-geodashboard
     app.kubernetes.io/instance: {{ .Release.Name }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "geostreams.fullname" . }}-www
+  labels:
+  {{- include "geostreams.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.www.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "geostreams.fullname" . }}-www
+    app.kubernetes.io/instance: {{ .Release.Name }}

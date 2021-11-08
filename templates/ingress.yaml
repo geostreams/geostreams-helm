@@ -41,5 +41,12 @@ spec:
                 name: {{ $fullName }}-api
                 port:
                   number: {{ $.Values.service.port }}
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}-www
+                port:
+                  number: {{ $.Values.www.port }}
     {{- end }}
   {{- end }}

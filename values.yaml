@@ -20,9 +20,10 @@ geodashboard:
 
 www:
   project: cinet
-  repository: hub.ncsa.illinois.edu/geostreams
+  repository: hub.ncsa.illinois.edu/geostreams/cinet_www
   pullPolicy: IfNotPresent
   tag: "latest"
+  port: 80
 
 imagePullSecrets:
   - name: regcred
