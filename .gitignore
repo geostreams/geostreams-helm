@@ -12,3 +12,4 @@ geostreams-*.tgz
 secrets-*.yaml
 values-*.yaml
 *.values.yaml
+/secret.yaml
